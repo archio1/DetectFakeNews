@@ -57,7 +57,7 @@ class DetectFake:
 
         pac = PassiveAggressiveClassifier(max_iter=50)
         pac.fit(self.vectorization_data['vec_train'], self.data_collection['y_train'])
-        self.modle = pac
+        self.model = pac
 
     def accuracy(self):
         """ADD HERE DESCRIPTION"""
