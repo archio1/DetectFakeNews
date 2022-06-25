@@ -35,8 +35,6 @@ class DetectFake:
             self.padded_seq = None
             self.embedding_matrix = None
 
-
-
     def check_model_name(self, name):
         """ADD HERE DESCRIPTION"""
 
@@ -148,29 +146,24 @@ class DetectFake:
         ])
         model.compile(loss='binary_crossentropy', optimizer='adam', metrics='accuracy')
         print(model.summary())
-        history_model = model.fit(
+        model.fit(
             self.data_collection['x_train'], self.data_collection['y_train'],
-            epochs=10, batch_size=256, validation_data=(self.data_collection['x_test'], self.data_collection['y_test']))
-        self.model = history_model
-
-    def check_news(self):
-        vec_newtest = cv.transform([newtext])
-        y_pred1 = pac.predict(vec_newtest)
-        return y_pred1[0]
+            epochs=10, batch_size=256, validation_data=(self.data_collection['x_test'], self.data_collection['y_test'])
+        )
+        self.model = model
 
 if __name__ == '__main__':
-    print(os.getcwd())
     data_frame = pd.read_csv('resources/train.csv')
-    model_passive_aggressive = DetectFake('passive_aggressive', model_path='resources/passive_aggressive_model')
+    # model_passive_aggressive = DetectFake('passive_aggressive', model_path='resources/passive_aggressive_model')
     # model_passive_aggressive.prepare_data()
     # model_passive_aggressive.vectorization_of_text()
     # model_passive_aggressive.train()
-    model_passive_aggressive.accuracy()
+    # model_passive_aggressive.accuracy()
     # model_passive_aggressive.save_model()
-    # model_neural_network = DetectFake('neural_network', data_frame)
-    # model_neural_network.cleaning_news_for_neural_net()
-    # model_neural_network.vector_text_for_neural_network()
-    # model_neural_network.create_matrix()
-    # model_neural_network.init_test_train_split()
-    # model_neural_network.neural_network()
-
+    model_neural_network = DetectFake('neural_network', data_frame)
+    model_neural_network.cleaning_news_for_neural_net()
+    model_neural_network.vector_text_for_neural_network()
+    model_neural_network.create_matrix()
+    model_neural_network.init_test_train_split()
+    model_neural_network.neural_network()
+    model_neural_network.save_model()
