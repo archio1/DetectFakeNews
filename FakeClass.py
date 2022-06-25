@@ -86,7 +86,7 @@ class DetectFake:
 
         y_pred = self.model.predict(self.vectorization_data['vec_test'])
         score = accuracy_score(self.data_collection['y_test'], y_pred)
-        print(f'Accuracy: {round 2)}%')
+        print(f'Accuracy: {round(score * 100, 2)}%')
         print(confusion_matrix(self.data_collection['y_test'], y_pred, labels=['Real', 'Fake']))
 
     def save_model(self, path_dir='resources'):
@@ -152,6 +152,11 @@ class DetectFake:
             self.data_collection['x_train'], self.data_collection['y_train'],
             epochs=10, batch_size=256, validation_data=(self.data_collection['x_test'], self.data_collection['y_test']))
         self.model = history_model
+
+    def check_news(self):
+        vec_newtest = cv.transform([newtext])
+        y_pred1 = pac.predict(vec_newtest)
+        return y_pred1[0]
 
 if __name__ == '__main__':
     print(os.getcwd())
