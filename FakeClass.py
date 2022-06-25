@@ -1,3 +1,5 @@
+import os
+
 import nltk
 import pandas as pd
 import numpy as np
@@ -11,22 +13,28 @@ from keras_preprocessing.sequence import pad_sequences
 from keras.models import Sequential
 from keras.layers import LSTM, Dropout, Dense, Embedding
 from sklearn.model_selection import train_test_split
+from keras.models import load_model
+from joblib import dump, load
 from nltk.corpus import stopwords
 nltk.download('stopwords')
 
 
 class DetectFake:
 
-    def __init__(self, model_name, data):
+    def __init__(self, model_name, data=None, model_path=None):
         self.model_name = self.check_model_name(model_name)
-        self.data = data
-        self.model = None
-        self.data_collection = None
-        self.vectorization_data = None
-        self.word_index = None
-        self.vocab_size = None
-        self.padded_seq = None
-        self.embedding_matrix = None
+        if model_path:
+            self.load_model(model_path)
+        else:
+            self.data = data
+            self.model = None
+            self.data_collection = None
+            self.vectorization_data = None
+            self.word_index = None
+            self.vocab_size = None
+            self.padded_seq = None
+            self.embedding_matrix = None
+
 
 
     def check_model_name(self, name):
@@ -43,8 +51,8 @@ class DetectFake:
 
         if self.model_name == 'passive_aggressive':
             self.passive_aggressive_classifier()
-        if self.model_name == 'neural_network':
-            self.model = self.neural_network()
+        elif self.model_name == 'neural_network':
+            self.neural_network()
 
     def prepare_data(self):
         """ADD HERE DESCRIPTION"""
@@ -78,8 +86,20 @@ class DetectFake:
 
         y_pred = self.model.predict(self.vectorization_data['vec_test'])
         score = accuracy_score(self.data_collection['y_test'], y_pred)
-        print(f'Accuracy: {round(score * 100, 2)}%')
+        print(f'Accuracy: {round 2)}%')
         print(confusion_matrix(self.data_collection['y_test'], y_pred, labels=['Real', 'Fake']))
+
+    def save_model(self, path_dir='resources'):
+        if self.model_name == 'passive_aggressive':
+            dump(self.model, path_dir+'/passive_aggressive_model')
+        elif self.model_name == 'neural_network':
+            self.model.save(path_dir+'/neural_network_model')
+
+    def load_model(self, path_to_model):
+        if self.model_name == 'passive_aggressive':
+            self.model = load(path_to_model)
+        elif self.model_name == 'neural_network':
+            self.model = load_model(path_to_model)
 
     def cleaning_news_for_neural_net(self):
         self.data = self.data.drop(columns=['id', 'title', 'author'], axis=1)
@@ -99,7 +119,7 @@ class DetectFake:
 
     def create_matrix(self):
         embedding_index = {}
-        with open('glove.6B.100d.txt', encoding='utf-8') as f:
+        with open('resources/glove.6B.100d.txt', encoding='utf-8') as f:
             for line in f:
                 values = line.split()
                 word = values[0]
@@ -131,22 +151,21 @@ class DetectFake:
         history_model = model.fit(
             self.data_collection['x_train'], self.data_collection['y_train'],
             epochs=10, batch_size=256, validation_data=(self.data_collection['x_test'], self.data_collection['y_test']))
-        return history_model
-
-
-
+        self.model = history_model
 
 if __name__ == '__main__':
-    data_frame = pd.read_csv('train.csv')
-    # model_passive_aggressive = DetectFake('passive_aggressive', data_frame)
+    print(os.getcwd())
+    data_frame = pd.read_csv('resources/train.csv')
+    model_passive_aggressive = DetectFake('passive_aggressive', model_path='resources/passive_aggressive_model')
     # model_passive_aggressive.prepare_data()
     # model_passive_aggressive.vectorization_of_text()
     # model_passive_aggressive.train()
-    # model_passive_aggressive.accuracy()
-    model_neural_network = DetectFake('neural_network', data_frame)
-    model_neural_network.cleaning_news_for_neural_net()
-    model_neural_network.vector_text_for_neural_network()
-    model_neural_network.create_matrix()
-    model_neural_network.init_test_train_split()
-    model_neural_network.neural_network()
+    model_passive_aggressive.accuracy()
+    # model_passive_aggressive.save_model()
+    # model_neural_network = DetectFake('neural_network', data_frame)
+    # model_neural_network.cleaning_news_for_neural_net()
+    # model_neural_network.vector_text_for_neural_network()
+    # model_neural_network.create_matrix()
+    # model_neural_network.init_test_train_split()
+    # model_neural_network.neural_network()
 
