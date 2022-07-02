@@ -23,6 +23,7 @@ class DetectFake:
 
     def __init__(self, model_name, data=None, model_path=None):
         self.model_name = self.check_model_name(model_name)
+        self.init_vectorizer = self.initialization_vector()
         if model_path:
             self.load_model(model_path)
         else:
@@ -34,6 +35,13 @@ class DetectFake:
             self.vocab_size = None
             self.padded_seq = None
             self.embedding_matrix = None
+
+    def initialization_vector(self):
+        if self.model_name == 'passive_aggressive':
+            return TfidfVectorizer(stop_words='english', max_df=0.7)
+        elif self.model_name == 'neural_network':
+            pass
+
 
     def check_model_name(self, name):
         """ADD HERE DESCRIPTION"""
@@ -66,10 +74,9 @@ class DetectFake:
     def vectorization_of_text(self):
         """ADD HERE DESCRIPTION"""
 
-        tfidf_vectorizer = TfidfVectorizer(stop_words='english', max_df=0.7)
         self.vectorization_data = {
-            'vec_train': tfidf_vectorizer.fit_transform(self.data_collection['x_train'].values.astype('U')),
-            'vec_test': tfidf_vectorizer.transform(self.data_collection['x_test'].values.astype('U'))
+            'vec_train': self.init_vectorizer.fit_transform(self.data_collection['x_train'].values.astype('U')),
+            'vec_test': self.init_vectorizer.transform(self.data_collection['x_test'].values.astype('U'))
         }
 
     def passive_aggressive_classifier(self):
@@ -152,18 +159,26 @@ class DetectFake:
         )
         self.model = model
 
+    def find_label(self, newtext):
+        vec_newtest = self.init_vectorizer.transform([newtext])
+        y_pred1 = self.model.predict(vec_newtest)
+        return print(y_pred1[0])
+
 if __name__ == '__main__':
     data_frame = pd.read_csv('resources/train.csv')
-    # model_passive_aggressive = DetectFake('passive_aggressive', model_path='resources/passive_aggressive_model')
+    data_frame_true = pd.read_csv('True.csv')
+    data_frame_true['label'] = 'Real'
+    model_passive_aggressive = DetectFake('passive_aggressive', model_path='resources/passive_aggressive_model')
     # model_passive_aggressive.prepare_data()
-    # model_passive_aggressive.vectorization_of_text()
+    # model_passive_aggressive.vectorization_of_text
+    model_passive_aggressive.find_label(data_frame_true['text'][7])
     # model_passive_aggressive.train()
     # model_passive_aggressive.accuracy()
     # model_passive_aggressive.save_model()
-    model_neural_network = DetectFake('neural_network', data_frame)
-    model_neural_network.cleaning_news_for_neural_net()
-    model_neural_network.vector_text_for_neural_network()
-    model_neural_network.create_matrix()
-    model_neural_network.init_test_train_split()
-    model_neural_network.neural_network()
-    model_neural_network.save_model()
+    # model_neural_network = DetectFake('neural_network', data_frame)
+    # model_neural_network.cleaning_news_for_neural_net()
+    # model_neural_network.vector_text_for_neural_network()
+    # model_neural_network.create_matrix()
+    # model_neural_network.init_test_train_split()
+    # model_neural_network.neural_network()
+    # model_neural_network.save_model()
