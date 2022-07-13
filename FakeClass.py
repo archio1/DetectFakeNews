@@ -85,6 +85,7 @@ class DetectFake:
         pac = PassiveAggressiveClassifier(max_iter=50)
         pac.fit(self.vectorization_data['vec_train'], self.data_collection['y_train'])
         self.model = pac
+        self.model.init_vectorizer = self.init_vectorizer
 
     def accuracy(self):
         """ADD HERE DESCRIPTION"""
@@ -160,7 +161,8 @@ class DetectFake:
         self.model = model
 
     def find_label(self, newtext):
-        vec_newtest = self.init_vectorizer.transform([newtext])
+        #fit_vectorize = self.init_vectorizer.fit([newtext])
+        vec_newtest = self.model.init_vectorizer.transform([newtext])
         y_pred1 = self.model.predict(vec_newtest)
         return print(y_pred1[0])
 
@@ -168,9 +170,11 @@ if __name__ == '__main__':
     data_frame = pd.read_csv('resources/train.csv')
     data_frame_true = pd.read_csv('True.csv')
     data_frame_true['label'] = 'Real'
-    model_passive_aggressive = DetectFake('passive_aggressive', model_path='resources/passive_aggressive_model')
+    # model_passive_aggressive = DetectFake('passive_aggressive', data=data_frame)
+    model_passive_aggressive = DetectFake('passive_aggressive',model_path='resources/passive_aggressive_model')
     # model_passive_aggressive.prepare_data()
-    # model_passive_aggressive.vectorization_of_text
+    # model_passive_aggressive.vectorization_of_text()
+    # model_passive_aggressive.passive_aggressive_classifier()
     model_passive_aggressive.find_label(data_frame_true['text'][7])
     # model_passive_aggressive.train()
     # model_passive_aggressive.accuracy()
