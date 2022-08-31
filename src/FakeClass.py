@@ -26,6 +26,7 @@ class DetectFake:
         self.init_vectorizer = self.initialization_vector()
         if model_path:
             self.load_model(model_path)
+            self.data = data
         else:
             self.data = data
             self.model = None
@@ -110,14 +111,14 @@ class DetectFake:
     def cleaning_news_for_neural_net(self):
         self.data = self.data.drop(columns=['id', 'title', 'author'], axis=1)# unite or delete columns
         self.data = self.data.dropna(axis=0)
-        self.data['clean_news'] = self.data['text'].str.lower()
-        self.data['clean_news'] = self.data['clean_news'].str.replace(r'[^A-Za-z0-9\s]', '')
-        self.data['clean_news'] = self.data['clean_news'].str.replace(r'\n', '')
-        self.data['clean_news'] = self.data['clean_news'].str.replace(r'\s+', ' ')
-        # self.data['clean_news'] = self.data['text'].lower()
-        # self.data['clean_news'] = self.data['clean_news'].replace(r'[^A-Za-z0-9\s]', '')
-        # self.data['clean_news'] = self.data['clean_news'].replace(r'\n', '') #str
-        # self.data['clean_news'] = self.data['clean_news'].replace(r'\s+', ' ')
+        # self.data['clean_news'] = self.data['text'].str.lower()
+        # self.data['clean_news'] = self.data['clean_news'].str.replace(r'[^A-Za-z0-9\s]', '')
+        # self.data['clean_news'] = self.data['clean_news'].str.replace(r'\n', '')
+        # self.data['clean_news'] = self.data['clean_news'].str.replace(r'\s+', ' ')
+        self.data['clean_news'] = self.data['text'].lower()
+        self.data['clean_news'] = self.data['clean_news'].replace(r'[^A-Za-z0-9\s]', '')
+        self.data['clean_news'] = self.data['clean_news'].replace(r'\n', '') #str
+        self.data['clean_news'] = self.data['clean_news'].replace(r'\s+', ' ')
 
     def vector_text_for_neural_network(self):
         # self.tokenizer = Tokenizer()
@@ -187,7 +188,9 @@ if __name__ == '__main__':
     # model_passive_aggressive.passive_aggressive_classifier()
     # model_passive_aggressive.train()
     # model_passive_aggressive.save_model()
-    model_neural_network = DetectFake('neural_network', data_frame)
+    predict_model_neural_network = DetectFake('neural_network', data=data_frame.iloc[7],
+                                              model_path='../resources/neural_model')
+    predict_model_neural_network.predict_by_neural_network()
 
 
 

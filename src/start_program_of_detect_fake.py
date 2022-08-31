@@ -32,8 +32,8 @@ def main():
         model_neural_network.neural_network()
         model_neural_network.save_model()
     elif args.mode == 'neural_network' and args.check:
-        predict_model_neural_network = DetectFake(model_name=args.mode, model_path='../resources/neural_model',
-                                                  newtext=path_to.iloc[7])
+        predict_model_neural_network = DetectFake(model_name=args.mode, data=path_to.iloc[7],
+                                                  model_path='../resources/neural_model')
         predict_model_neural_network.predict_by_neural_network()
 
 if __name__ == '__main__':
