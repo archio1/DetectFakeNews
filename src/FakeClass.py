@@ -1,4 +1,3 @@
-import os
 
 import nltk
 import pandas as pd
@@ -22,12 +21,11 @@ nltk.download('stopwords')
 
 class DetectFake:
 
-    def __init__(self, model_name, data=None, model_path=None, newtext = None):
+    def __init__(self, model_name, data=None, model_path=None):
         self.model_name = self.check_model_name(model_name)
         self.init_vectorizer = self.initialization_vector()
         if model_path:
             self.load_model(model_path)
-            self.data = newtext
         else:
             self.data = data
             self.model = None
@@ -97,7 +95,7 @@ class DetectFake:
         print(f'Accuracy: {round(score * 100, 2)}%')
         print(confusion_matrix(self.data_collection['y_test'], y_pred, labels=['Real', 'Fake']))
 
-    def save_model(self, path_dir='resources'):
+    def save_model(self, path_dir='../resources'):
         if self.model_name == 'passive_aggressive':
             dump(self.model, path_dir+'/passive_aggressive_model')
         elif self.model_name == 'neural_network':
@@ -110,14 +108,16 @@ class DetectFake:
             self.model = load_model(path_to_model)
 
     def cleaning_news_for_neural_net(self):
-        self.data = self.data.drop(columns=['id', 'title', 'author', 'subject', 'date'], axis=1)# unite or delete columns
+        self.data = self.data.drop(columns=['id', 'title', 'author'], axis=1)# unite or delete columns
         self.data = self.data.dropna(axis=0)
-        self.data['clean_news'] = self.data['text'].lower()
-        # self.data['clean_news'] = self.data['text'].str.lower().astype(str)
-        # self.data['clean_news'] = self.data['text'].str.replace()
+        self.data['clean_news'] = self.data['text'].str.lower()
+        self.data['clean_news'] = self.data['clean_news'].str.replace(r'[^A-Za-z0-9\s]', '')
+        self.data['clean_news'] = self.data['clean_news'].str.replace(r'\n', '')
+        self.data['clean_news'] = self.data['clean_news'].str.replace(r'\s+', ' ')
+        # self.data['clean_news'] = self.data['text'].lower()
         # self.data['clean_news'] = self.data['clean_news'].replace(r'[^A-Za-z0-9\s]', '')
-        self.data['clean_news'] = self.data['clean_news'].replace(r'\n', '') #str
-        self.data['clean_news'] = self.data['clean_news'].replace(r'\s+', ' ')
+        # self.data['clean_news'] = self.data['clean_news'].replace(r'\n', '') #str
+        # self.data['clean_news'] = self.data['clean_news'].replace(r'\s+', ' ')
 
     def vector_text_for_neural_network(self):
         # self.tokenizer = Tokenizer()
@@ -129,7 +129,7 @@ class DetectFake:
 
     def create_matrix(self):
         embedding_index = {}
-        with open('resources/glove.6B.100d.txt', encoding='utf-8') as f:
+        with open('../resources/glove.6B.100d.txt', encoding='utf-8') as f:
             for line in f:
                 values = line.split()
                 word = values[0]
@@ -178,29 +178,17 @@ class DetectFake:
         return y_pred1[0]
 
 if __name__ == '__main__':
-    data_frame = pd.read_csv('resources/train.csv')
-    data_frame_true = pd.read_csv('True.csv')
-    data_frame_true['label'] = 'Real'
+    data_frame = pd.read_csv('../resources/train.csv')
+    data_frame_true = pd.read_csv('../True.csv')
+    # data_frame_true['label'] = 'Real'
     # model_passive_aggressive = DetectFake('passive_aggressive', data=data_frame)
-    # model_passive_aggressive = DetectFake('passive_aggressive',model_path='resources/passive_aggressive_model')
     # model_passive_aggressive.prepare_data()
     # model_passive_aggressive.vectorization_of_text()
     # model_passive_aggressive.passive_aggressive_classifier()
-    # model_passive_aggressive.predict(data_frame_true['text'][7])
     # model_passive_aggressive.train()
-    # model_passive_aggressive.accuracy()
     # model_passive_aggressive.save_model()
-    # model_neural_network = DetectFake('neural_network', data_frame)
-    # model_neural_network = DetectFake('neural_network', model_path='resources/neural_model')
-    predict_model_neural_network = DetectFake('neural_network', model_path='resources/neural_model', newtext=data_frame.iloc[7])
-    predict_model_neural_network.predict_by_neural_network()
-    # model_neural_network.cleaning_news_for_neural_net()
-    # model_neural_network.vector_text_for_neural_network()
-    # model_neural_network.create_matrix()
-    # model_neural_network.init_test_train_split()
-    # model_neural_network.neural_network()
-    # model_neural_network.save_model()
-    # model_neural_network.predict_by_nueral_network(data_frame['text'][7])
+    model_neural_network = DetectFake('neural_network', data_frame)
+
 
 
 
