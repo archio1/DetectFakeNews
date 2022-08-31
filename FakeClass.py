@@ -22,7 +22,7 @@ nltk.download('stopwords')
 class DetectFake:
 
     def __init__(self, model_name, data=None, model_path=None):
-        self.model_name = self.check_model_name(model_name)
+        self.model_name = model_name
         if model_path:
             self.load_model(model_path)
         else:
@@ -35,14 +35,22 @@ class DetectFake:
             self.padded_seq = None
             self.embedding_matrix = None
 
-    def check_model_name(self, name):
-        """ADD HERE DESCRIPTION"""
+    @property
+    def model_name(self):
+        """Get property `model_name`"""
 
-        models_tuple = ('passive_aggressive', 'neural_network')
-        if name in models_tuple:
-            return name
+        return self._model_name
+
+    @model_name.setter
+    def model_name(self, name):
+        """Set property `model_name` and check if a `name` in the `models_names`"""
+
+        models_names = ('passive_aggressive', 'neural_network')
+
+        if name in models_names:
+            self._model_name = name
         else:
-            raise Exception('Model name not found')
+            raise ValueError(f'Model name not found, models_names = {models_names}')
 
     def train(self):
         """ADD HERE DESCRIPTION"""
