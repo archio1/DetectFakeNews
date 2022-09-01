@@ -11,26 +11,16 @@ def main():
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     path_to = pd.read_csv(args.way)
-    # print(f'args={args}\n\n , mode={args.mode}, args={args.create}')
     if args.mode == 'passive_aggressive' and args.create:
         model_pass_agr = DetectFake(model_name=args.mode, data=path_to)
-        model_pass_agr.prepare_data()
-        model_pass_agr.vectorization_of_text()
-        model_pass_agr.passive_aggressive_classifier()
-        model_pass_agr.train()
-        model_pass_agr.save_model()
+        model_pass_agr.operations_of_create_PAM()
         print('module is done')
     elif args.mode == 'passive_aggressive' and args.check:
         model_pass_agr = DetectFake(model_name=args.mode, model_path='../resources/passive_aggressive_model')
         print(model_pass_agr.predict(path_to['text'][8]))
     elif args.mode == 'neural_network' and args.create:
         model_neural_network = DetectFake(model_name=args.mode, data=path_to)
-        model_neural_network.cleaning_news_for_neural_net()
-        model_neural_network.vector_text_for_neural_network()
-        model_neural_network.create_matrix()
-        model_neural_network.init_test_train_split()
-        model_neural_network.neural_network()
-        model_neural_network.save_model()
+        model_neural_network.operations_of_create_NNM()
     elif args.mode == 'neural_network' and args.check:
         predict_model_neural_network = DetectFake(model_name=args.mode, data=path_to.iloc[7],
                                                   model_path='../resources/neural_model')
