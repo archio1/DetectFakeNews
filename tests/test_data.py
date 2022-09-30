@@ -1,6 +1,5 @@
 import pandas as pd
 from src.FakeClass import DetectFake
-from pathlib import PurePosixPath
 from pathlib import Path
 
 

@@ -1,7 +1,6 @@
 import pytest
 from src.FakeClass import DetectFake
 import pandas as pd
-import csv
 from pathlib import Path
 parent_path = Path().parent.resolve()
 
