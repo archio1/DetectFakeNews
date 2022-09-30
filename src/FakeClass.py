@@ -58,21 +58,21 @@ class DetectFake:
             raise ValueError(f'Model name not found, models_names = {models_names}')
 
     def initialization_vector(self) -> TfidfVectorizer | Tokenizer:
-        """Vector 'if' select for transform text depending on the chosen 'model_name'"""
+        """Vector select for transform text depending on the chosen `model_name`"""
         if self.model_name == 'passive_aggressive':
             return TfidfVectorizer(stop_words='english', max_df=0.7)
         elif self.model_name == 'neural_network':
             return Tokenizer()
 
     def train(self):
-        """Model 'if' select depending on the chosen 'model_name'"""
+        """Model select depending on the chosen `model_name`"""
         if self.model_name == 'passive_aggressive':
             self.passive_aggressive_classifier()
         elif self.model_name == 'neural_network':
             self.neural_network()
 
     def prepare_data(self):
-        """Replace data column 'label' on '0: 'Real', 1: 'Fake'' and create dictionary with train and test selection"""
+        """Replace data column `label` on `0: `Real`, 1: `Fake`` and create dictionary with train and test selection"""
 
         self.data['label'] = self.data['label'].replace({0: 'Real', 1: 'Fake'})
 
@@ -83,7 +83,7 @@ class DetectFake:
         self.data_collection = {'x_train': x_train, 'x_test': x_test, 'y_train': y_train, 'y_test': y_test}
 
     def vectorization_of_text(self):
-        """Vector transform for passive-aggressive model on train and test selection in dictionary"""
+        """Transform and learn data set to data-term matrix."""
 
         self.vectorization_data = {
             'vec_train': self.init_vectorizer.fit_transform(self.data_collection['x_train'].values.astype('U')),
@@ -91,7 +91,7 @@ class DetectFake:
         }
 
     def passive_aggressive_classifier(self):
-        """Usage passive-aggressive classifier on data and save the result in 'model'"""
+        """Fit linear model with Passive Aggressive algorithm on data and save the result in `model`"""
 
         pac = PassiveAggressiveClassifier(max_iter=50)
         pac.fit(self.vectorization_data['vec_train'], self.data_collection['y_train'])
@@ -107,7 +107,7 @@ class DetectFake:
         print(confusion_matrix(self.data_collection['y_test'], y_pred, labels=['Real', 'Fake']))
 
     def save_model(self, path_dir='../resources'):
-        """Save chosen model depending on model name"""
+        """Save chosen model depending on `model_name`"""
 
         if self.model_name == 'passive_aggressive':
             dump(self.model, path_dir+'/passive_aggressive_model')
@@ -115,7 +115,7 @@ class DetectFake:
             self.model.save(path_dir+'/neural_model')
 
     def load_model(self, path_to_model):
-        """Model load depending on chosen model"""
+        """Model load depending on chosen `model`"""
 
         if self.model_name == 'passive_aggressive':
             self.model = load(path_to_model)
@@ -141,7 +141,7 @@ class DetectFake:
             self.data['clean_news'] = self.data['clean_news'].replace(r'\s+', ' ')
 
     def vector_text_for_neural_network(self):
-        """Vector transform for neural network model and created pad_sequences(2D Numpy array of shape)"""
+        """Updates internal vocabulary based on a data set and created pad_sequences(2D Numpy array of shape)"""
 
         self.init_vectorizer.fit_on_texts(self.data['clean_news'])
         self.word_index = self.init_vectorizer.word_index
@@ -151,7 +151,7 @@ class DetectFake:
 
     def create_matrix(self):
         """Embedded matrix create(relationship representation of words): use file
-         '../resources/glove.6B.100d.txt' and write even index in dictionary"""
+         `../resources/glove.6B.100d.txt` and write even index in dictionary"""
 
         embedding_index = {}
         with open(parent_path / '../resources/glove.6B.100d.txt', encoding='utf-8') as f:
@@ -168,14 +168,16 @@ class DetectFake:
                 self.embedding_matrix[i] = embedding_vector
 
     def init_test_train_split(self):
-        """Text split text train and test selection"""
+        """Split processed data into random train and test subsets"""
 
         x_train, x_test, y_train, y_test = train_test_split(
             self.padded_seq, self.data['label'], test_size=0.20, random_state=42, stratify=self.data['label'])
         self.data_collection = {'x_train': x_train, 'x_test': x_test, 'y_train': y_train, 'y_test': y_test}
 
     def neural_network(self):
-        """Create LSTM parameters, use neural network model on train data and save result 'model'"""
+        """Creates a Sequential model instance. Initialization of Long Short-Term Memory layer.
+         Trains the model for a fixed number of epochs (iterations on a dataset) and configures the model for training.
+         Save result in `model`"""
 
         model = Sequential([
             Embedding(self.vocab_size + 1, 100, weights=[self.embedding_matrix], trainable=False),
@@ -210,7 +212,7 @@ class DetectFake:
         return y_pred1[0]
 
     def operations_of_create_PAM(self):
-        """Methods for study and save passive-aggressive model"""
+        """Wrapper for study and save passive-aggressive model"""
 
         self.prepare_data()
         self.vectorization_of_text()
@@ -219,7 +221,7 @@ class DetectFake:
         self.save_model()
 
     def operations_of_create_NNM(self):
-        """Methods for study and save neural network model"""
+        """Wrapper for study and save neural network model"""
 
         self.cleaning_news_for_neural_net()
         self.vector_text_for_neural_network()
@@ -230,16 +232,10 @@ class DetectFake:
 
 
 if __name__ == '__main__':
-    # data_frame = pd.read_csv(parent_path / 'resources/train.csv')
-    data_frame = pd.read_csv(r'C:\Users\User\PycharmProjects\pythonProject\DetectFakeNews\src\Fake.csv')
-    # data_frame_true = pd.read_csv('../True.csv')
-    # model_passive_aggressive = DetectFake('passive_aggressive', data=data_frame)
-    # model_passive_aggressive.prepare_data()
-    # model_passive_aggressive.vectorization_of_text()
-    # model_passive_aggressive.train()
-    # model_passive_aggressive.accuracy()
-    # model_passive_aggressive.save_model()
-    model_passive_aggressive = DetectFake('passive_aggressive',
-                                          model_path=r'C:\Users\User\PycharmProjects\pythonProject\DetectFakeNews\resources\passive_aggressive_model')
-
-    model_passive_aggressive(data_frame['text'][8])
+    data_frame = pd.read_csv(parent_path / 'resources/train.csv')
+    model_passive_aggressive = DetectFake('passive_aggressive', data=data_frame)
+    model_passive_aggressive.prepare_data()
+    model_passive_aggressive.vectorization_of_text()
+    model_passive_aggressive.train()
+    model_passive_aggressive.accuracy()
+    model_passive_aggressive.save_model()
