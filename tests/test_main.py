@@ -1,7 +1,6 @@
 import sys
 import pytest
-sys.path.append('C:/Users/User/PycharmProjects/pythonProject/DetectFakeNews/src')
-from FakeClass import DetectFake
+from src.FakeClass import DetectFake
 
 def test_module_name_check_negative():
     expected_error = ''
