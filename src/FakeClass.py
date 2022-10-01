@@ -15,6 +15,7 @@ from keras.models import load_model
 from joblib import dump, load
 from pathlib import Path
 from pandas import Series
+from typing import Union
 from nltk.corpus import stopwords
 nltk.download('stopwords')
 parent_path = Path().resolve()
@@ -57,7 +58,7 @@ class DetectFake:
         else:
             raise ValueError(f'Model name not found, models_names = {models_names}')
 
-    def initialization_vector(self) -> TfidfVectorizer | Tokenizer:
+    def initialization_vector(self) -> Union[TfidfVectorizer, Tokenizer]:
         """Vector select for transform text depending on the chosen `model_name`"""
         if self.model_name == 'passive_aggressive':
             return TfidfVectorizer(stop_words='english', max_df=0.7)
