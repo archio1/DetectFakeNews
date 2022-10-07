@@ -3,9 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import PassiveAggressiveClassifier
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
-from sklearn.model_selection import cross_val_score
 from keras.preprocessing.text import Tokenizer
 from keras_preprocessing.sequence import pad_sequences
 from keras.models import Sequential
@@ -233,7 +231,7 @@ class DetectFake:
 
 
 if __name__ == '__main__':
-    data_frame = pd.read_csv(parent_path / 'resources/train.csv')
+    data_frame = pd.read_csv(parent_path / '../resources/train.csv')
     model_passive_aggressive = DetectFake('passive_aggressive', data=data_frame)
     model_passive_aggressive.prepare_data()
     model_passive_aggressive.vectorization_of_text()
