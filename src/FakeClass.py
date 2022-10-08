@@ -58,6 +58,7 @@ class DetectFake:
 
     def initialization_vector(self) -> Union[TfidfVectorizer, Tokenizer]:
         """Vector select for transform text depending on the chosen `model_name`"""
+
         if self.model_name == 'passive_aggressive':
             return TfidfVectorizer(stop_words='english', max_df=0.7)
         elif self.model_name == 'neural_network':
@@ -65,6 +66,7 @@ class DetectFake:
 
     def train(self):
         """Model select depending on the chosen `model_name`"""
+
         if self.model_name == 'passive_aggressive':
             self.passive_aggressive_classifier()
         elif self.model_name == 'neural_network':
@@ -105,7 +107,7 @@ class DetectFake:
         print(f'Accuracy: {round(score * 100, 2)}%')
         print(confusion_matrix(self.data_collection['y_test'], y_pred, labels=['Real', 'Fake']))
 
-    def save_model(self, path_dir='../resources'):
+    def save_model(self, path_dir='resources'):
         """Save chosen model depending on `model_name`"""
 
         if self.model_name == 'passive_aggressive':
@@ -153,7 +155,7 @@ class DetectFake:
          `../resources/glove.6B.100d.txt` and write even index in dictionary"""
 
         embedding_index = {}
-        with open(parent_path / '../resources/glove.6B.100d.txt', encoding='utf-8') as f:
+        with open(parent_path / 'resources/glove.6B.100d.txt', encoding='utf-8') as f:
             for line in f:
                 values = line.split()
                 word = values[0]
@@ -231,7 +233,7 @@ class DetectFake:
 
 
 if __name__ == '__main__':
-    data_frame = pd.read_csv(parent_path / '../resources/train.csv')
+    data_frame = pd.read_csv(parent_path / 'resources/train.csv')
     model_passive_aggressive = DetectFake('passive_aggressive', data=data_frame)
     model_passive_aggressive.prepare_data()
     model_passive_aggressive.vectorization_of_text()

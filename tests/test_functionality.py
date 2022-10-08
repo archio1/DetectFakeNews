@@ -4,8 +4,6 @@ import pandas as pd
 from pathlib import Path
 parent_path = Path().parent.resolve()
 
-
-
 @pytest.fixture
 def example_data_for_PAM():
     detect_fake = DetectFake('passive_aggressive', data=pd.read_csv(parent_path / 'tests/testdata.csv', delimiter=';'))

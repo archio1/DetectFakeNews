@@ -1,8 +1,6 @@
 import pandas as pd
 from src.FakeClass import DetectFake
 from pathlib import Path
-
-
 parent_path = Path().parent.resolve()
 
 def test_checkdata_for_real():
@@ -26,7 +24,7 @@ def test_checkdata_for_NT_on_fake():
 
 
 def test_checkdata_for_NT_on_true():
-    data_frame_fake = pd.read_csv('C:/Users/User/PycharmProjects/pythonProject/DetectFakeNews/True.csv')
+    data_frame_fake = pd.read_csv(parent_path / 'True.csv')
     detect_fake = DetectFake('neural_network', data=data_frame_fake.iloc[3], model_path=parent_path / 'resources/neural_model')
     assert 0.5 <= detect_fake.predict_by_neural_network() <= 1
 
